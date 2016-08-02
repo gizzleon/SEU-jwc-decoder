@@ -103,8 +103,7 @@ def imageToString(img, showImage = False):
 	
 	# image blurring, you may change the parameters below to obtain different result
 	blurRange = 6
-	share = 36
-	kernel = np.ones((blurRange, blurRange), np.float32) / share
+	kernel = np.ones((blurRange, blurRange), np.float32) / (blurRange*blurRange)
 	img = cv2.filter2D(img, -1, kernel)
 #	cv2.imwrite('codes\\blurred.bmp', img)
 	
@@ -118,7 +117,6 @@ def imageToString(img, showImage = False):
 		plt.yticks([])	
 		plt.show()
 	
-#	print 'decoder writing'
 	cv2.imwrite('processed.bmp', img)
 	new_img = Image.open('processed.bmp')
 	rawCode = pytesser.image_to_string(new_img)
