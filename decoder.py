@@ -19,7 +19,6 @@
 import cv2
 import Image
 import numpy as np
-from matplotlib import pyplot as plt
 import pytesser
 
 def findPoints(img, xPos = 0):
@@ -73,8 +72,18 @@ def goodSlope(img, k, leftPoint, thickness = 0):
 			if j < img.shape[0] and j >= 0 and img[j,i] == 0:
 				result += 1
 	return result		
-	
-def imageToString(img, showImage = False):
+
+def imageFileToString(imgPath):
+	'''input a valid path'''
+	img = np.ndarray(0, dtype = 'uint8')
+	try:
+		img = cv2.imread(imgPath, 0)
+	except Exception, e:
+		print e
+		return ('', img)
+	return imageFileToString(img)
+
+def processImage(img):
 	'''please input a grayscale image(using cv2.imread(<filename>,0))'''
 	(retval, img) = cv2.threshold(img, 210, 255, cv2.THRESH_BINARY)
 	img = img[:,5:200]  #crop
@@ -95,7 +104,6 @@ def imageToString(img, showImage = False):
 		k1 = k2
 		k2 = float(rightPoints[0] - leftPoints[1]) / (img.shape[1] - 1)
 	
-	
 	# processing the lines
 	fillLine(img, k1, leftPoints[0])
 	fillLine(img, k2, leftPoints[1])
@@ -111,18 +119,18 @@ def imageToString(img, showImage = False):
 	thresholdVal = 110
 	(retval, img) = cv2.threshold(img, thresholdVal, 255, cv2.THRESH_BINARY)
 #	cv2.imwrite('codes\\binarized.bmp', img)
-	if showImage == True:
-		plt.imshow(img)
-		plt.xticks([])
-		plt.yticks([])	
-		plt.show()
-	
+
+	return img
+
+def imageToString(img):
+	'''please input a grayscale image(using cv2.imread(<filename>,0))'''
+
+	img = processImage(img)
 	cv2.imwrite('processed.bmp', img)
 	new_img = Image.open('processed.bmp')
 	rawCode = pytesser.image_to_string(new_img)
 	code = ""
 	for letter in rawCode:
-		
 		#handle possible mismatches
 		if letter >= '0' and letter <= '9':
 			code += letter
@@ -149,12 +157,7 @@ def imageToString(img, showImage = False):
 	return (code, img)
 	
 if __name__ == '__main__':
-	
 	codeAddr = raw_input("input the address of the code image: ")
 	img = cv2.imread(codeAddr, 0) #load the image in grayscale
 	(code, img) = imageToString(img)
-	plt.imshow(img)
-	plt.xticks([])
-	plt.yticks([])	
-	plt.show()
 	print code
