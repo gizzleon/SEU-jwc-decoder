@@ -124,8 +124,8 @@ def imageToString(img, showImage = False):
 	for letter in rawCode:
 		
 		#handle possible mismatches
-		if letter == ' ' or letter == '\n' or letter == '.':
-			continue
+		if letter >= '0' and letter <= '9':
+			code += letter
 		elif letter == 'z' or letter == 'Z' or letter == 'L':
 			code += '2'
 		elif letter == 'o' or letter == 'O' or letter == 'Q':
@@ -144,8 +144,6 @@ def imageToString(img, showImage = False):
 			code += '1'
 		elif letter == 'G' or letter == 'U':
 			code += '6'
-		elif letter >= '0' and letter <= '9':
-			code += letter
 #		else:
 #			code += letter
 	return (code, img)
